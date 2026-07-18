@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}Offer a Ride - AutoShare{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto">
+    <div class="bg-gray-800 p-6 rounded-2xl border border-gray-700 shadow-sm">
+        <div class="mb-6">
+            <h1 class="text-xl font-bold text-white">Offer a Ride Pool</h1>
+            <p class="text-xs text-gray-400 mt-1">Create a pool valid for today only (12:00 AM - 11:59 PM).</p>
+        </div>
+
+        <form action="/pool/create" method="post" class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-300 mb-2">From (Pickup Location)</label>
+                <input type="text" name="source" placeholder="e.g., Campus Main Gate" required
+                       class="w-full bg-gray-950 border border-gray-700 rounded-xl px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-emerald-500 text-sm">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-300 mb-2">To (Destination)</label>
+                <input type="text" name="destination" placeholder="e.g., Kottayam Railway Station" required
+                       class="w-full bg-gray-950 border border-gray-700 rounded-xl px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-emerald-500 text-sm">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-300 mb-2">Departure Time (Today)</label>
+                <input type="time" name="time_str" required
+                       class="w-full bg-gray-950 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500 text-sm">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-300 mb-2">Estimated Total Auto Fare (₹)</label>
+                <input type="number" name="total_fare" placeholder="e.g., 200" min="1" required
+                       class="w-full bg-gray-950 border border-gray-700 rounded-xl px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-emerald-500 text-sm">
+            </div>
+
+            <div class="pt-2 flex gap-3">
+                <a href="/" class="w-1/2 bg-gray-700 hover:bg-gray-600 text-white font-medium py-3 rounded-xl transition-colors text-center text-sm">
+                    Cancel
+                </a>
+                <button type="submit" class="w-1/2 bg-emerald-500 hover:bg-emerald-600 text-gray-900 font-bold py-3 rounded-xl transition-colors text-sm shadow-lg shadow-emerald-900/20">
+                    Publish Pool
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
