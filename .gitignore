@@ -1,0 +1,20 @@
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# Python
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# Local database
+autoshare.db
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

@@ -10,6 +10,12 @@
             <p class="text-xs text-gray-400 mt-1">Create a pool valid for today only (12:00 AM - 11:59 PM).</p>
         </div>
 
+        {% if error %}
+        <div class="mb-4 bg-red-500/10 border border-red-500/30 text-red-300 text-sm px-4 py-3 rounded-xl">
+            {{ error }}
+        </div>
+        {% endif %}
+
         <form action="/pool/create" method="post" class="space-y-4">
             <div>
                 <label class="block text-sm font-medium text-gray-300 mb-2">From (Pickup Location)</label>
