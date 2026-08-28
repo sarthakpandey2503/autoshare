@@ -1,0 +1,214 @@
+{% extends "base.html" %}
+
+{% block title %}About - AutoShare{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto space-y-10">
+
+    <!-- Hero -->
+    <section class="relative overflow-hidden rounded-2xl border border-gray-700 bg-gradient-to-br from-gray-800 via-gray-800 to-emerald-950/40 p-8 sm:p-10 text-center">
+        <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(16,185,129,0.08),transparent_60%)]"></div>
+        <div class="relative">
+            <p class="text-emerald-400 text-xs font-semibold uppercase tracking-widest mb-3">IIIT Kottayam</p>
+            <h1 class="text-3xl sm:text-4xl font-bold text-white leading-tight">Share the ride.<br class="hidden sm:inline"> Split the fare.</h1>
+            <p class="text-gray-400 mt-4 text-sm sm:text-base max-w-lg mx-auto">
+                Campus autos charge full fare whether you're alone or four — AutoShare helps students pool rides so nobody waits solo and everyone pays less.
+            </p>
+        </div>
+    </section>
+
+    <!-- How it works -->
+    <section>
+        <h2 class="text-lg font-semibold text-white mb-4">How it works</h2>
+        <div class="grid gap-4 sm:grid-cols-3">
+            <div class="bg-gray-800 border border-gray-700 rounded-xl p-5">
+                <div class="text-2xl mb-3">🛺</div>
+                <p class="text-xs text-emerald-400 font-semibold mb-1">Step 1</p>
+                <h3 class="text-sm font-bold text-white mb-2">Offer a ride</h3>
+                <p class="text-xs text-gray-400 leading-relaxed">Set your route, departure time, and total fare. Others see open slots on the board.</p>
+            </div>
+            <div class="bg-gray-800 border border-gray-700 rounded-xl p-5">
+                <div class="text-2xl mb-3">✋</div>
+                <p class="text-xs text-emerald-400 font-semibold mb-1">Step 2</p>
+                <h3 class="text-sm font-bold text-white mb-2">Request to join</h3>
+                <p class="text-xs text-gray-400 leading-relaxed">Found a ride going your way? Send a request. The host sees your username, gender, and phone.</p>
+            </div>
+            <div class="bg-gray-800 border border-gray-700 rounded-xl p-5">
+                <div class="text-2xl mb-3">🤝</div>
+                <p class="text-xs text-emerald-400 font-semibold mb-1">Step 3</p>
+                <h3 class="text-sm font-bold text-white mb-2">Ride together</h3>
+                <p class="text-xs text-gray-400 leading-relaxed">Once approved, you get a private contacts list — phone and gender only, visible to pool members.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Feature grid -->
+    <section>
+        <h2 class="text-lg font-semibold text-white mb-4">Built for campus life</h2>
+        <div class="grid gap-3 sm:grid-cols-2">
+            <div class="bg-gray-800/60 border border-gray-700/80 rounded-xl p-4 flex gap-3">
+                <span class="text-lg">⏰</span>
+                <div>
+                    <p class="text-sm font-medium text-white">24-hour booking window</p>
+                    <p class="text-xs text-gray-400 mt-0.5">Plan rides from now up to 24 hours ahead.</p>
+                </div>
+            </div>
+            <div class="bg-gray-800/60 border border-gray-700/80 rounded-xl p-4 flex gap-3">
+                <span class="text-lg">2️⃣</span>
+                <div>
+                    <p class="text-sm font-medium text-white">Max 2 active rides</p>
+                    <p class="text-xs text-gray-400 mt-0.5">Offer, join, or pending — at least 30 min apart.</p>
+                </div>
+            </div>
+            <div class="bg-gray-800/60 border border-gray-700/80 rounded-xl p-4 flex gap-3">
+                <span class="text-lg">✅</span>
+                <div>
+                    <p class="text-sm font-medium text-white">Host approval</p>
+                    <p class="text-xs text-gray-400 mt-0.5">Hosts verify requesters before adding them.</p>
+                </div>
+            </div>
+            <div class="bg-gray-800/60 border border-gray-700/80 rounded-xl p-4 flex gap-3">
+                <span class="text-lg">🔒</span>
+                <div>
+                    <p class="text-sm font-medium text-white">Private contacts</p>
+                    <p class="text-xs text-gray-400 mt-0.5">Phone + gender shared only inside your pool.</p>
+                </div>
+            </div>
+            <div class="bg-gray-800/60 border border-gray-700/80 rounded-xl p-4 flex gap-3">
+                <span class="text-lg">📡</span>
+                <div>
+                    <p class="text-sm font-medium text-white">Live dashboard</p>
+                    <p class="text-xs text-gray-400 mt-0.5">Board updates automatically while you're on the page.</p>
+                </div>
+            </div>
+            <div class="bg-gray-800/60 border border-gray-700/80 rounded-xl p-4 flex gap-3">
+                <span class="text-lg">📋</span>
+                <div>
+                    <p class="text-sm font-medium text-white">7-day ride history</p>
+                    <p class="text-xs text-gray-400 mt-0.5">Departed and cancelled rides kept for a week.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section>
+        <h2 class="text-lg font-semibold text-white mb-4">Common questions</h2>
+        <div class="space-y-2">
+            <details class="group bg-gray-800 border border-gray-700 rounded-xl overflow-hidden">
+                <summary class="flex items-center justify-between cursor-pointer px-5 py-4 text-sm font-medium text-white select-none list-none [&::-webkit-details-marker]:hidden">
+                    Who can use AutoShare?
+                    <span class="text-gray-500 group-open:rotate-180 transition-transform ml-2">▾</span>
+                </summary>
+                <p class="px-5 pb-4 text-xs text-gray-400 leading-relaxed">Only IIIT Kottayam students with a valid <code class="text-emerald-400">@iiitkottayam.ac.in</code> email. Sign up once with your username, gender, and phone — then log in anytime with a one-time code.</p>
+            </details>
+            <details class="group bg-gray-800 border border-gray-700 rounded-xl overflow-hidden">
+                <summary class="flex items-center justify-between cursor-pointer px-5 py-4 text-sm font-medium text-white select-none list-none [&::-webkit-details-marker]:hidden">
+                    How does fare splitting work?
+                    <span class="text-gray-500 group-open:rotate-180 transition-transform ml-2">▾</span>
+                </summary>
+                <p class="px-5 pb-4 text-xs text-gray-400 leading-relaxed">The host enters the total auto fare. Per-head cost is calculated automatically as people join — up to 4 riders per pool.</p>
+            </details>
+            <details class="group bg-gray-800 border border-gray-700 rounded-xl overflow-hidden">
+                <summary class="flex items-center justify-between cursor-pointer px-5 py-4 text-sm font-medium text-white select-none list-none [&::-webkit-details-marker]:hidden">
+                    What does the host see when someone requests to join?
+                    <span class="text-gray-500 group-open:rotate-180 transition-transform ml-2">▾</span>
+                </summary>
+                <p class="px-5 pb-4 text-xs text-gray-400 leading-relaxed">Your username, gender, and phone number — so they can call and confirm before approving. Your details aren't shown on the public board.</p>
+            </details>
+            <details class="group bg-gray-800 border border-gray-700 rounded-xl overflow-hidden">
+                <summary class="flex items-center justify-between cursor-pointer px-5 py-4 text-sm font-medium text-white select-none list-none [&::-webkit-details-marker]:hidden">
+                    Can I be in more than one ride at a time?
+                    <span class="text-gray-500 group-open:rotate-180 transition-transform ml-2">▾</span>
+                </summary>
+                <p class="px-5 pb-4 text-xs text-gray-400 leading-relaxed">You can relate to up to 2 rides (offered, joined, or pending request), but departure times must be at least 30 minutes apart.</p>
+            </details>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    {% if not current_user %}
+    <section class="bg-emerald-500/10 border border-emerald-500/25 rounded-2xl p-6 sm:p-8 text-center">
+        <h2 class="text-lg font-bold text-white mb-2">Ready to share a ride?</h2>
+        <p class="text-sm text-gray-400 mb-5">Log in with your college email or create a new account.</p>
+        <div class="flex flex-col sm:flex-row gap-3 justify-center">
+            <a href="/login" class="inline-flex justify-center bg-emerald-500 hover:bg-emerald-600 text-gray-900 font-semibold px-8 py-3 rounded-xl text-sm transition-colors shadow-lg shadow-emerald-900/20">
+                Log in
+            </a>
+            <a href="/register" class="inline-flex justify-center bg-gray-700 hover:bg-gray-600 text-white font-medium px-8 py-3 rounded-xl text-sm transition-colors border border-gray-600">
+                Create an account
+            </a>
+        </div>
+    </section>
+    {% else %}
+    <section class="text-center">
+        <a href="/" class="inline-flex justify-center bg-emerald-500 hover:bg-emerald-600 text-gray-900 font-semibold px-8 py-3 rounded-xl text-sm transition-colors">
+            Go to dashboard
+        </a>
+    </section>
+    {% endif %}
+
+    <div class="border-t border-gray-700 pt-6 text-center pb-4">
+        <p class="text-sm text-gray-400">Developed by <span class="text-emerald-400 font-medium">Sarthak Pandey</span></p>
+        <p class="text-xs text-gray-500 mt-1">Batch of 2024–2028</p>
+        <button type="button" id="coffee-btn" aria-expanded="false" aria-controls="coffee-modal"
+                class="mt-4 inline-flex items-center gap-2 bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/40 text-amber-200 font-medium px-5 py-2.5 rounded-xl text-sm transition-colors">
+            ☕ Buy me a coffee
+        </button>
+    </div>
+</div>
+
+<div id="coffee-modal" role="dialog" aria-modal="true" aria-labelledby="coffee-modal-title" hidden
+     class="fixed inset-0 z-[100] flex items-center justify-center p-4">
+    <div id="coffee-backdrop" class="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
+    <div id="coffee-panel" class="relative bg-gray-800 border border-gray-700 rounded-2xl p-6 sm:p-8 max-w-sm w-full shadow-2xl text-center">
+        <button type="button" id="coffee-close-x" aria-label="Close"
+                class="absolute top-3 right-3 text-gray-500 hover:text-white text-xl leading-none px-2 py-1">&times;</button>
+        <h2 id="coffee-modal-title" class="text-lg font-bold text-white mb-1">Support AutoShare</h2>
+        <p class="text-xs text-gray-400 mb-5">Like AutoShare? Scan to tip — totally optional.</p>
+        <img src="/static/images/tip_qr.jpeg" alt="Tip QR code" width="256" height="256"
+             class="mx-auto w-56 h-56 rounded-xl border border-gray-600 bg-white object-contain">
+        <button type="button" id="coffee-close" class="mt-5 text-sm text-gray-400 hover:text-emerald-400 transition-colors">
+            Close
+        </button>
+    </div>
+</div>
+
+<script>
+(function () {
+  const btn = document.getElementById('coffee-btn');
+  const modal = document.getElementById('coffee-modal');
+  const panel = document.getElementById('coffee-panel');
+  const backdrop = document.getElementById('coffee-backdrop');
+  const closeBtn = document.getElementById('coffee-close');
+  const closeX = document.getElementById('coffee-close-x');
+  if (!btn || !modal) return;
+
+  function openModal() {
+    modal.removeAttribute('hidden');
+    modal.classList.remove('hidden');
+    document.body.classList.add('overflow-hidden');
+    btn.setAttribute('aria-expanded', 'true');
+  }
+
+  function closeModal() {
+    modal.setAttribute('hidden', '');
+    modal.classList.add('hidden');
+    document.body.classList.remove('overflow-hidden');
+    btn.setAttribute('aria-expanded', 'false');
+  }
+
+  btn.addEventListener('click', function (e) {
+    e.preventDefault();
+    openModal();
+  });
+  backdrop.addEventListener('click', closeModal);
+  if (panel) panel.addEventListener('click', function (e) { e.stopPropagation(); });
+  closeBtn.addEventListener('click', closeModal);
+  closeX.addEventListener('click', closeModal);
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && !modal.hasAttribute('hidden')) closeModal();
+  });
+})();
+</script>
+{% endblock %}
