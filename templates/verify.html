@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block title %}Verify code - AutoShare{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto">
+    <div class="bg-gray-800 p-6 rounded-2xl border border-gray-700 shadow-sm">
+        <div class="mb-6">
+            <h1 class="text-xl font-bold text-white">Enter verification code</h1>
+            <p class="text-xs text-gray-400 mt-1">Code for <span class="text-emerald-400">{{ email }}</span>. Expires in 10 minutes.</p>
+        </div>
+
+        <div id="otp-status-banner" class="mb-4 text-sm px-4 py-3 rounded-xl border
+            {% if email_failed %}bg-red-500/10 border-red-500/30 text-red-300
+            {% elif email_sent %}bg-emerald-500/10 border-emerald-500/30 text-emerald-300
+            {% else %}bg-amber-500/10 border-amber-500/30 text-amber-200{% endif %}">
+            {% if email_failed %}
+            Couldn't send email — use Resend below or check your address.
+            {% elif email_sent %}
+            Code sent — check your inbox (and spam folder).
+            {% else %}
+            Sending code to your email…
+            {% endif %}
+        </div>
+
+        {% if error %}
+        <div class="mb-4 bg-red-500/10 border border-red-500/30 text-red-300 text-sm px-4 py-3 rounded-xl">
+            {{ error }}
+        </div>
+        {% endif %}
+
+        <form action="/verify-otp" method="post" class="space-y-4">
+            <input type="hidden" name="email" value="{{ email }}">
+            <input type="hidden" name="purpose" value="{{ purpose }}">
+            <div>
+                <label class="block text-sm font-medium text-gray-300 mb-2">One-time code</label>
+                <input type="text" name="otp" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" required
+                       autocomplete="one-time-code" placeholder="••••••"
+                       class="w-full bg-gray-950 border border-gray-700 rounded-xl px-4 py-3 text-white text-center tracking-[0.4em] placeholder-gray-600 focus:outline-none focus:border-emerald-500 text-lg">
+            </div>
+            <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-600 text-gray-900 font-bold py-3 rounded-xl transition-colors text-sm shadow-lg shadow-emerald-900/20">
+                Verify and continue
+            </button>
+        </form>
+
+        <form action="/resend-otp" method="post" class="mt-4">
+            <input type="hidden" name="email" value="{{ email }}">
+            <input type="hidden" name="purpose" value="{{ purpose }}">
+            <button type="submit" class="w-full text-sm text-gray-400 hover:text-emerald-400 transition-colors py-2">
+                Resend code
+            </button>
+        </form>
+
+        <p class="text-sm text-gray-500 text-center mt-4">
+            <a href="{% if purpose == 'signup' %}/register{% else %}/login{% endif %}" class="text-gray-400 hover:text-emerald-400">Back</a>
+        </p>
+    </div>
+</div>
+
+<script>
+(function () {
+  const banner = document.getElementById('otp-status-banner');
+  if (!banner) return;
+  const email = {{ email | tojson }};
+  const purpose = {{ purpose | tojson }};
+  let sent = {{ 'true' if email_sent else 'false' }};
+  let failed = {{ 'true' if email_failed else 'false' }};
+
+  function setBanner(state) {
+    banner.className = 'mb-4 text-sm px-4 py-3 rounded-xl border ';
+    if (state === 'failed') {
+      banner.className += 'bg-red-500/10 border-red-500/30 text-red-300';
+      banner.textContent = "Couldn't send email — use Resend below or check your address.";
+    } else if (state === 'sent') {
+      banner.className += 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300';
+      banner.textContent = 'Code sent — check your inbox (and spam folder).';
+    } else {
+      banner.className += 'bg-amber-500/10 border-amber-500/30 text-amber-200';
+      banner.textContent = 'Sending code to your email…';
+    }
+  }
+
+  if (!sent && !failed) {
+    const timer = setInterval(async () => {
+      try {
+        const res = await fetch('/api/otp-status?email=' + encodeURIComponent(email) + '&purpose=' + encodeURIComponent(purpose));
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data.failed) {
+          failed = true;
+          setBanner('failed');
+          clearInterval(timer);
+        } else if (data.sent) {
+          sent = true;
+          setBanner('sent');
+          clearInterval(timer);
+        }
+      } catch (_) {}
+    }, 2000);
+  }
+})();
+</script>
+{% endblock %}
