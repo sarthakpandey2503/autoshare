@@ -3,62 +3,270 @@
 {% block title %}Dashboard - AutoShare{% endblock %}
 
 {% block content %}
-<div class="space-y-6">
-    <!-- Welcome Header -->
-    <div class="bg-gray-800 p-6 rounded-2xl border border-gray-700 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 shadow-sm">
+<div class="space-y-8" id="dashboard-root">    <div class="bg-gray-800 p-6 rounded-2xl border border-gray-700 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 shadow-sm">
         <div>
             <h1 class="text-2xl font-bold text-white">Active Pools Dashboard</h1>
-            <p class="text-sm text-gray-400 mt-1">Logged in as: <span class="text-emerald-400 font-medium">{{ current_user.name }}</span></p>
+            <p class="text-sm text-gray-400 mt-1">Logged in as: <span class="text-emerald-400 font-medium">{{ current_user.username }}</span>
+                <span class="text-gray-600">·</span>
+                <span class="text-[11px] text-gray-500" id="poll-status">Live</span>
+            </p>
         </div>
         <a href="/pool/create" class="inline-flex items-center justify-center bg-emerald-500 hover:bg-emerald-600 text-gray-900 font-semibold px-5 py-2.5 rounded-xl transition-colors shadow-lg shadow-emerald-900/20 text-center">
             + Offer a Ride
         </a>
     </div>
 
-    <!-- Active Rides Header -->
+    {% if msg %}
+    <div class="bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-sm px-4 py-3 rounded-xl">{{ msg }}</div>
+    {% endif %}
+    {% if err %}
+    <div class="bg-red-500/10 border border-red-500/30 text-red-300 text-sm px-4 py-3 rounded-xl">{{ err }}</div>
+    {% endif %}
+
     <div>
-        <h2 class="text-lg font-semibold text-gray-300 mb-3 flex items-center gap-2">
-            <span>📅</span> Upcoming Commutes
-        </h2>
-        
-        {% if not pools %}
-        <div class="bg-gray-800/50 border border-dashed border-gray-700 rounded-2xl p-8 text-center text-gray-400">
-            No active ride pools found. Be the first to start one!
+        <h2 class="text-lg font-semibold text-gray-300 mb-3">My Rides</h2>
+        <div id="my-rides-list">
+        {% if not my_rides %}
+        <div class="bg-gray-800/50 border border-dashed border-gray-700 rounded-2xl p-6 text-center text-gray-400 text-sm empty-my">
+            You have not offered or joined any upcoming rides.
         </div>
         {% else %}
-        <div class="grid gap-4 sm:grid-cols-2">
-            {% for pool in pools %}
-            <div class="bg-gray-800 border border-gray-700 rounded-2xl p-5 flex flex-col justify-between hover:border-gray-600 transition-all shadow-sm">
+        <div class="grid gap-4 sm:grid-cols-2 my-rides-grid">
+            {% for pool in my_rides %}
+            <div class="bg-gray-800 border border-gray-700 rounded-2xl p-5 flex flex-col justify-between shadow-sm">
                 <div>
                     <div class="flex justify-between items-start gap-2">
                         <span class="inline-flex text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2.5 py-0.5 rounded-full font-medium">
-                            {{ pool.remaining_seats }} slots left
+                            {% if pool.remaining_seats > 0 %}{{ pool.remaining_seats }} slots left{% else %}Full{% endif %}
                         </span>
-                        <!-- Dynamic Fare Split Calculation -->
-                        <span class="text-sm font-bold text-emerald-400">₹{{ (pool.total_fare / (1 + pool.members|length))|round|int }} / head</span>
+                        <span class="text-sm font-bold text-emerald-400">₹{{ pool.fare_per_head }} / head</span>
                     </div>
-                    
                     <div class="mt-4 space-y-2">
                         <p class="text-sm text-gray-300"><span class="text-gray-500">From:</span> <strong class="text-white">{{ pool.source }}</strong></p>
                         <p class="text-sm text-gray-300"><span class="text-gray-500">To:</span> <strong class="text-white">{{ pool.destination }}</strong></p>
                         <p class="text-xs text-gray-400 bg-gray-950 px-3 py-1.5 rounded-lg inline-block mt-1">
-                            ⏰ Leaves: {{ pool.departure_time.strftime('%I:%M %p') }}
+                            Leaves: {{ pool.departure_time.strftime('%d %b %I:%M %p') }}
+                        </p>
+                        <p class="text-xs text-gray-500 mt-1">
+                            {% if pool.creator_id == current_user.id %}You offered this ride{% else %}Hosted by <span class="text-emerald-400">{{ pool.creator.username }}</span>{% endif %}
+                            · {{ pool.headcount }}/{{ pool.max_capacity }} riders
                         </p>
                     </div>
-                </div>
 
-                <div class="mt-5 pt-4 border-t border-gray-700/60 flex items-center justify-between gap-4">
-                    <span class="text-xs text-gray-400 truncate">By: {{ pool.creator.name }}</span>
-                    <form action="/pool/{{ pool.id }}/join" method="post">
-                        <button type="submit" class="bg-gray-700 hover:bg-emerald-500 hover:text-gray-900 text-gray-200 text-xs font-semibold px-4 py-2 rounded-lg transition-all">
-                            Join Pool
-                        </button>
+                    <div class="mt-4 bg-gray-950/70 border border-gray-700 rounded-xl p-3">
+                        <p class="text-xs font-semibold text-emerald-400 mb-2">Pool contacts (private)</p>
+                        <ul class="space-y-2">
+                            {% for person in pool.participants %}
+                            <li class="text-xs text-gray-300 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-0.5">
+                                <span>
+                                    {{ person.gender_label }}
+                                    {% if person.id == pool.creator_id %}<span class="text-gray-500">(host)</span>{% endif %}
+                                    {% if person.id == current_user.id %}<span class="text-gray-500">(you)</span>{% endif %}
+                                </span>
+                                <a href="tel:{{ person.phone }}" class="text-emerald-400 hover:text-emerald-300">{{ person.phone }}</a>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+
+                    {% if pool.creator_id == current_user.id and pool.pending_requests %}
+                    <div class="mt-4 bg-amber-500/5 border border-amber-500/20 rounded-xl p-3">
+                        <p class="text-xs font-semibold text-amber-300 mb-2">Join requests</p>
+                        <ul class="space-y-3">
+                            {% for req in pool.pending_requests %}
+                            <li class="text-xs text-gray-300">
+                                <div class="mb-2"><span class="text-emerald-400">@{{ req.student.username }}</span> · {{ req.student.gender_label }} · <a href="tel:{{ req.student.phone }}" class="text-emerald-400">{{ req.student.phone }}</a></div>
+                                <div class="flex gap-2">
+                                    <form action="/pool/{{ pool.id }}/request/{{ req.id }}/approve" method="post">
+                                        <button type="submit" class="bg-emerald-500 hover:bg-emerald-600 text-gray-900 text-xs font-semibold px-3 py-1.5 rounded-lg">Approve</button>
+                                    </form>
+                                    <form action="/pool/{{ pool.id }}/request/{{ req.id }}/reject" method="post">
+                                        <button type="submit" class="bg-gray-700 hover:bg-red-500 hover:text-white text-gray-200 text-xs font-semibold px-3 py-1.5 rounded-lg">Reject</button>
+                                    </form>
+                                </div>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="mt-5 pt-4 border-t border-gray-700/60 flex items-center justify-end gap-2">
+                    {% if pool.creator_id == current_user.id %}
+                    <form action="/pool/{{ pool.id }}/delete" method="post" onsubmit="return confirm('Cancel this ride for everyone?');">
+                        <button type="submit" class="bg-red-500/15 hover:bg-red-500 hover:text-white text-red-300 text-xs font-semibold px-4 py-2 rounded-lg border border-red-500/30">Delete</button>
                     </form>
+                    {% else %}
+                    <form action="/pool/{{ pool.id }}/leave" method="post">
+                        <button type="submit" class="bg-gray-700 hover:bg-amber-500 hover:text-gray-900 text-gray-200 text-xs font-semibold px-4 py-2 rounded-lg">Leave</button>
+                    </form>
+                    {% endif %}
                 </div>
             </div>
             {% endfor %}
         </div>
         {% endif %}
+        </div>
+
+        <h3 class="text-sm font-semibold text-gray-400 mt-6 mb-3">Ride history (last 7 days)</h3>
+        <div id="history-list">
+        {% if not history %}
+        <div class="bg-gray-800/40 border border-dashed border-gray-700 rounded-xl p-4 text-center text-gray-500 text-xs">No recent ride history.</div>
+        {% else %}
+        <div class="grid gap-3 sm:grid-cols-2">
+            {% for pool in history %}
+            <div class="bg-gray-800/60 border border-gray-700/80 rounded-xl p-4 text-sm">
+                <div class="flex justify-between gap-2 text-xs">
+                    <span class="text-amber-300/90">{{ pool.end_reason }}</span>
+                    <span class="text-gray-500">{% if pool.creator_id == current_user.id %}Hosted{% else %}Joined{% endif %}</span>
+                </div>
+                <p class="text-white mt-2 font-medium">{{ pool.source }} → {{ pool.destination }}</p>
+                <p class="text-xs text-gray-400 mt-1">Was: {{ pool.departure_time.strftime('%d %b %I:%M %p') }} · Host: {{ pool.creator.username }} · ₹{{ pool.fare_per_head }}/head</p>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        </div>
+    </div>
+
+    <div>
+        <h2 class="text-lg font-semibold text-gray-300 mb-3">Upcoming Commutes</h2>
+        <div id="upcoming-list">
+        {% if not pools %}
+        <div class="bg-gray-800/50 border border-dashed border-gray-700 rounded-2xl p-8 text-center text-gray-400">
+            No open ride pools right now. Be the first to start one!
+        </div>
+        {% else %}
+        <div class="grid gap-4 sm:grid-cols-2">
+            {% for pool in pools %}
+            <div class="bg-gray-800 border border-gray-700 rounded-2xl p-5 flex flex-col justify-between shadow-sm">
+                <div>
+                    <div class="flex justify-between items-start gap-2">
+                        <span class="inline-flex text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2.5 py-0.5 rounded-full font-medium">
+                            {{ pool.remaining_seats }} slots left
+                        </span>
+                        <span class="text-sm font-bold text-emerald-400">₹{{ pool.fare_per_head }} / head</span>
+                    </div>
+                    <div class="mt-4 space-y-2">
+                        <p class="text-sm text-gray-300"><span class="text-gray-500">From:</span> <strong class="text-white">{{ pool.source }}</strong></p>
+                        <p class="text-sm text-gray-300"><span class="text-gray-500">To:</span> <strong class="text-white">{{ pool.destination }}</strong></p>
+                        <p class="text-xs text-gray-400 bg-gray-950 px-3 py-1.5 rounded-lg inline-block mt-1">
+                            Leaves: {{ pool.departure_time.strftime('%d %b %I:%M %p') }}
+                        </p>
+                        <p class="text-xs text-gray-500 mt-1">Hosted by <span class="text-emerald-400">{{ pool.creator.username }}</span></p>
+                    </div>
+                </div>
+                <div class="mt-5 pt-4 border-t border-gray-700/60 flex items-center justify-end gap-4">
+                    {% if pool.id in pending_request_pool_ids %}
+                    <form action="/pool/{{ pool.id }}/request/cancel" method="post">
+                        <button type="submit" class="bg-amber-500/15 border border-amber-500/30 text-amber-300 hover:bg-amber-500 hover:text-gray-900 text-xs font-semibold px-4 py-2 rounded-lg">Cancel request</button>
+                    </form>
+                    {% else %}
+                    <form action="/pool/{{ pool.id }}/request" method="post">
+                        <button type="submit" class="bg-gray-700 hover:bg-emerald-500 hover:text-gray-900 text-gray-200 text-xs font-semibold px-4 py-2 rounded-lg">Request to Join</button>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        </div>
     </div>
 </div>
+
+<script>
+(function () {
+  const POLL_MS = 10000;
+  const statusEl = document.getElementById('poll-status');
+
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  function renderMy(rides) {
+    const root = document.getElementById('my-rides-list');
+    if (!rides.length) {
+      root.innerHTML = '<div class="bg-gray-800/50 border border-dashed border-gray-700 rounded-2xl p-6 text-center text-gray-400 text-sm">You have not offered or joined any upcoming rides.</div>';
+      return;
+    }
+    root.innerHTML = '<div class="grid gap-4 sm:grid-cols-2">' + rides.map(p => {
+      const contacts = (p.participants || []).map(person =>
+        `<li class="text-xs text-gray-300 flex flex-col sm:flex-row sm:justify-between gap-0.5"><span>${esc(person.gender)}${person.is_host ? ' <span class="text-gray-500">(host)</span>' : ''}${person.is_you ? ' <span class="text-gray-500">(you)</span>' : ''}</span><a class="text-emerald-400" href="tel:${esc(person.phone)}">${esc(person.phone)}</a></li>`
+      ).join('');
+      const reqs = (p.pending_requests || []).map(r =>
+        `<li class="text-xs text-gray-300"><div class="mb-2"><span class="text-emerald-400">@${esc(r.username || '')}</span> · ${esc(r.gender)} · <a class="text-emerald-400" href="tel:${esc(r.phone)}">${esc(r.phone)}</a></div><div class="flex gap-2"><form action="/pool/${p.id}/request/${r.id}/approve" method="post"><button class="bg-emerald-500 text-gray-900 text-xs font-semibold px-3 py-1.5 rounded-lg">Approve</button></form><form action="/pool/${p.id}/request/${r.id}/reject" method="post"><button class="bg-gray-700 text-gray-200 text-xs font-semibold px-3 py-1.5 rounded-lg">Reject</button></form></div></li>`
+      ).join('');
+      const actions = p.is_host
+        ? `<form action="/pool/${p.id}/delete" method="post" onsubmit="return confirm('Cancel this ride for everyone?');"><button class="bg-red-500/15 text-red-300 text-xs font-semibold px-4 py-2 rounded-lg border border-red-500/30">Delete</button></form>`
+        : `<form action="/pool/${p.id}/leave" method="post"><button class="bg-gray-700 text-gray-200 text-xs font-semibold px-4 py-2 rounded-lg">Leave</button></form>`;
+      return `<div class="bg-gray-800 border border-gray-700 rounded-2xl p-5 flex flex-col justify-between shadow-sm"><div>
+        <div class="flex justify-between"><span class="text-xs text-emerald-400 border border-emerald-500/20 px-2.5 py-0.5 rounded-full">${p.remaining_seats > 0 ? p.remaining_seats + ' slots left' : 'Full'}</span>
+        <span class="text-sm font-bold text-emerald-400">₹${p.fare_per_head} / head</span></div>
+        <div class="mt-4 space-y-2 text-sm"><p><span class="text-gray-500">From:</span> <strong class="text-white">${esc(p.source)}</strong></p>
+        <p><span class="text-gray-500">To:</span> <strong class="text-white">${esc(p.destination)}</strong></p>
+        <p class="text-xs text-gray-400 bg-gray-950 px-3 py-1.5 rounded-lg inline-block">Leaves: ${esc(p.departure_display)}</p>
+        <p class="text-xs text-gray-500">${p.is_host ? 'You offered this ride' : 'Hosted by <span class="text-emerald-400">' + esc(p.host_username || '') + '</span>'} · ${p.headcount}/${p.max_capacity} riders</p></div>
+        <div class="mt-4 bg-gray-950/70 border border-gray-700 rounded-xl p-3"><p class="text-xs font-semibold text-emerald-400 mb-2">Pool contacts (private)</p><ul class="space-y-2">${contacts}</ul></div>
+        ${p.is_host && reqs ? `<div class="mt-4 bg-amber-500/5 border border-amber-500/20 rounded-xl p-3"><p class="text-xs font-semibold text-amber-300 mb-2">Join requests</p><ul class="space-y-3">${reqs}</ul></div>` : ''}
+        </div><div class="mt-5 pt-4 border-t border-gray-700/60 flex justify-end">${actions}</div></div>`;
+    }).join('') + '</div>';
+  }
+
+  function renderHistory(items) {
+    const root = document.getElementById('history-list');
+    if (!items.length) {
+      root.innerHTML = '<div class="bg-gray-800/40 border border-dashed border-gray-700 rounded-xl p-4 text-center text-gray-500 text-xs">No recent ride history.</div>';
+      return;
+    }
+    root.innerHTML = '<div class="grid gap-3 sm:grid-cols-2">' + items.map(p =>
+      `<div class="bg-gray-800/60 border border-gray-700/80 rounded-xl p-4 text-sm"><div class="flex justify-between text-xs"><span class="text-amber-300/90">${esc(p.end_reason)}</span><span class="text-gray-500">${esc(p.role)}</span></div>
+      <p class="text-white mt-2 font-medium">${esc(p.source)} → ${esc(p.destination)}</p>
+      <p class="text-xs text-gray-400 mt-1">Was: ${esc(p.departure_display)} · Host: ${esc(p.host_username || '')} · ₹${p.fare_per_head}/head</p></div>`
+    ).join('') + '</div>';
+  }
+
+  function renderUpcoming(pools, pendingIds) {
+    const root = document.getElementById('upcoming-list');
+    const pending = new Set(pendingIds || []);
+    if (!pools.length) {
+      root.innerHTML = '<div class="bg-gray-800/50 border border-dashed border-gray-700 rounded-2xl p-8 text-center text-gray-400">No open ride pools right now. Be the first to start one!</div>';
+      return;
+    }
+    root.innerHTML = '<div class="grid gap-4 sm:grid-cols-2">' + pools.map(p => {
+      const btn = pending.has(p.id)
+        ? `<form action="/pool/${p.id}/request/cancel" method="post"><button class="bg-amber-500/15 border border-amber-500/30 text-amber-300 text-xs font-semibold px-4 py-2 rounded-lg">Cancel request</button></form>`
+        : `<form action="/pool/${p.id}/request" method="post"><button class="bg-gray-700 hover:bg-emerald-500 text-gray-200 text-xs font-semibold px-4 py-2 rounded-lg">Request to Join</button></form>`;
+      return `<div class="bg-gray-800 border border-gray-700 rounded-2xl p-5 flex flex-col justify-between shadow-sm"><div>
+        <div class="flex justify-between"><span class="text-xs text-emerald-400 border border-emerald-500/20 px-2.5 py-0.5 rounded-full">${p.remaining_seats} slots left</span>
+        <span class="text-sm font-bold text-emerald-400">₹${p.fare_per_head} / head</span></div>
+        <div class="mt-4 space-y-2 text-sm"><p><span class="text-gray-500">From:</span> <strong class="text-white">${esc(p.source)}</strong></p>
+        <p><span class="text-gray-500">To:</span> <strong class="text-white">${esc(p.destination)}</strong></p>
+        <p class="text-xs text-gray-400 bg-gray-950 px-3 py-1.5 rounded-lg inline-block">Leaves: ${esc(p.departure_display)}</p>
+        <p class="text-xs text-gray-500 mt-1">Hosted by <span class="text-emerald-400">${esc(p.host_username || '')}</span></p></div>
+        </div><div class="mt-5 pt-4 border-t border-gray-700/60 flex justify-end">${btn}</div></div>`;
+    }).join('') + '</div>';
+  }
+
+  async function poll() {
+    if (document.visibilityState === 'hidden') return;
+    try {
+      const res = await fetch('/api/dashboard', { credentials: 'same-origin' });
+      if (res.status === 401) { window.location = '/login'; return; }
+      if (!res.ok) throw new Error('bad status');
+      const data = await res.json();
+      renderMy(data.my_rides || []);
+      renderHistory(data.history || []);
+      renderUpcoming(data.upcoming || [], data.pending_request_pool_ids || []);
+      if (statusEl) statusEl.textContent = 'Updated ' + new Date().toLocaleTimeString();
+    } catch (e) {
+      if (statusEl) statusEl.textContent = 'Live (retrying)';
+    }
+  }
+
+  setInterval(poll, POLL_MS);
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') poll();
+  });
+})();
+</script>
 {% endblock %}
